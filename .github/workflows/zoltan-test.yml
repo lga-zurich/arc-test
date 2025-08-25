@@ -12,7 +12,7 @@ jobs:
       - name: install build tools
         run: |
           apt update
-          apt install -y make
+          apt install -y make git docker-compose-plugin
       - name: check out presto
         uses: actions/checkout@master
         with:
