@@ -1,0 +1,12 @@
+name: zoltan's playground
+on:
+  workflow_dispatch:
+
+jobs:
+  :
+    # You need to use the INSTALLATION_NAME from the previous step
+    runs-on: arc-runner-set
+    container:
+      image: quay.io/centos/centos:stream9
+    steps:
+    - run: cat /etc/os-release
