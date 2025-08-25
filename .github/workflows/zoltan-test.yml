@@ -10,7 +10,7 @@ jobs:
       image: ubuntu:22.04
     steps:
       - name: install build tools
-        run: sudo apt install -y make
+        run: apt install -y make
       - name: check out presto
         uses: actions/checkout@master
         with:
