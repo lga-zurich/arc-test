@@ -9,4 +9,4 @@ jobs:
     container:
       image: ubuntu:latest
     steps:
-    - run: uname -a
+    - run: cat /etc/os-release
