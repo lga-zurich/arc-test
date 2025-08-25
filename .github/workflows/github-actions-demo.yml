@@ -7,6 +7,6 @@ jobs:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: arc-runner-set
     container:
-      image: 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:25-08-2025-e53f403
+      image: ubuntu:latest
     steps:
     - run: cat /etc/os-release
