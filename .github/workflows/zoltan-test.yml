@@ -8,6 +8,9 @@ jobs:
     runs-on: arc-runner-set
     container:
       image: ubuntu:22.04
+    defaults:
+      run:
+        working-directory: ./presto-native-execution
     steps:
       - name: install build tools
         run: |
