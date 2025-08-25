@@ -7,6 +7,17 @@ jobs:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: arc-runner-set
     container:
-      image: quay.io/centos/centos:stream9
+      image: ubuntu:22.04
     steps:
-    - run: cat /etc/os-release
+      - name: check out presto
+        uses: actions/checkout@master
+        with:
+          repository: prestodb/presto
+      - name: update velox
+        run: |
+          cd presto-native-execution
+          make velox-submodule
+      - name: disk space consumption before build
+        run: df
+      - name: build dependency image
+        run: docker compose build centos-native-dependency
