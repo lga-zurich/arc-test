@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: check out presto
         uses: actions/checkout@master
+      - name: wait
+        run: |
+          sleep 1000
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
