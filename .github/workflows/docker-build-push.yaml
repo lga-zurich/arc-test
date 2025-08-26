@@ -5,6 +5,8 @@ on:
 jobs:
   test:
     runs-on: arc-runner-set
+    container:
+      image: ubuntu:22.04
     steps:
       - name: check out presto
         uses: actions/checkout@master
