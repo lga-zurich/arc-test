@@ -26,6 +26,6 @@ jobs:
           git config --system --add safe.directory "$GITHUB_WORKSPACE"
       - name: build image
         working-directory: ./test-build
-        run: docker build -t 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest
+        run: docker build -t 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest .
       - name: push image
         run: docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest
