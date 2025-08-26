@@ -28,6 +28,6 @@ jobs:
         working-directory: ./test-build
         run: docker build -t 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest .
       - name: docker login
-        run docker login 471112500371.dkr.ecr.us-west-2.amazonaws.com
+        run: docker login 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: push image
         run: docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest
