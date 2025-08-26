@@ -33,6 +33,6 @@ jobs:
           aws-region: us-west-2
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@main
       - name: push image
         run: docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest
