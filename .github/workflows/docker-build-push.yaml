@@ -5,8 +5,6 @@ on:
 jobs:
   test:
     runs-on: arc-runner-set
-    container:
-      image: ubuntu:22.04
     steps:
       - name: check out presto
         uses: actions/checkout@master
@@ -21,4 +19,4 @@ jobs:
           ./aws/install
       - name: login ecr
         run: |      
-          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
+          aws ecr get-login-password --region us-west-2
