@@ -28,11 +28,11 @@ jobs:
         working-directory: ./test-build
         run: docker build -t 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest .
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@latest
+        uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
           aws-region: us-west-2
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@latest
+        uses: aws-actions/amazon-ecr-login@v2
       - name: push image
         run: docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/test/runner-docker-build-push:latest
