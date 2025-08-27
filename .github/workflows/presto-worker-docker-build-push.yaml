@@ -1,0 +1,51 @@
+name: docker build push
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: arc-runner-set
+    steps:
+      - name: check out presto
+        uses: actions/checkout@master
+        with:
+          repository: prestodb/presto
+          ref: f5f0bb70c823669e0ff82a4f68c475432759e3be
+      - name: install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y make git docker-compose curl ca-certificates
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
+          echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                 $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt update
+          sudo apt install -y docker-ce
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-region: us-west-2
+      - name: install aws cli
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+      - name: login ecr
+        run: |      
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
+      - name: pull dependency image
+        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:25-08-2025-e53f403
+      - name: build image
+        working-directory: ./presto-native-execution
+        run: |
+          make submodules
+          GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:25-08-2025-e53f403 centos-native-runtime
+      - name: tag and push image
+        working-directory: ./presto-native-execution
+        run: |
+          export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
+          docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG} 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest
