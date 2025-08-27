@@ -14,10 +14,10 @@ jobs:
       - name: cudf parquet PR
         working-directory: ./presto
         run: |
-          git fetch origin pull/25376/head:presto-cudf-parquet-reader
-          git switch presto-cudf-parquet-reader
           git config --global user.email "presto-cudf@ibm.com"
           git config --global user.name "Presto CUDF"
+          git fetch origin pull/25376/head:presto-cudf-parquet-reader
+          git switch presto-cudf-parquet-reader
           git rebase f5f0bb70c823669e0ff82a4f68c475432759e3be
       - name: install build tools
         run: |
