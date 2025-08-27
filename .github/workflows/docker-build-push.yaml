@@ -1,4 +1,4 @@
-name: docker build push
+name: presto dependency image
 on:
   workflow_dispatch:
 
