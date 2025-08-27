@@ -36,6 +36,7 @@ jobs:
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: pull dependency image
         run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest
+      - name: build image
         run: |
           docker run -d --rm --name compile-presto-coordinator -v $(pwd):/presto 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest tail -f /dev/null
           docker exec -it compile-presto-coordinator bash -c "dnf install -y python3.11 && rm -f /usr/bin/python3 && ln -s /usr/bin/python3.11 /usr/bin/python3"
