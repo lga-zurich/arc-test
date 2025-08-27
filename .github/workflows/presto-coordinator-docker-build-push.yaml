@@ -39,8 +39,8 @@ jobs:
       - name: build image
         run: |
           docker run -d --rm --name compile-presto-coordinator -v $(pwd):/presto 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest tail -f /dev/null
-          docker exec -it compile-presto-coordinator bash -c "dnf install -y python3.11 && rm -f /usr/bin/python3 && ln -s /usr/bin/python3.11 /usr/bin/python3"
-          docker exec -it compile-presto-coordinator bash -c "cd /presto && ./mvnw install -DskipTests -T 64 && chmod a+r presto-cli/target/presto-cli-0.295-SNAPSHOT-executable.jar"
+          docker exec compile-presto-coordinator bash -c "dnf install -y python3.11 && rm -f /usr/bin/python3 && ln -s /usr/bin/python3.11 /usr/bin/python3"
+          docker exec compile-presto-coordinator bash -c "cd /presto && ./mvnw install -DskipTests -T 64 && chmod a+r presto-cli/target/presto-cli-0.295-SNAPSHOT-executable.jar"
           docker stop compile-presto-coordinator
           cp presto-server/target/presto-server-0.295-SNAPSHOT.tar.gz ./docker/
           cp presto-cli/target/presto-cli-0.295-SNAPSHOT-executable.jar ./docker/
