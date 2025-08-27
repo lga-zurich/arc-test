@@ -60,7 +60,8 @@ jobs:
       - name: build image
         working-directory: ./presto/presto-native-execution
         run: |
-          cat velox/experimental/cudf/exec/ToCudf.h
+          ls
+          cat ./velox/experimental/cudf/exec/ToCudf.h
           GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:2025-08-27_0910-f5f0bb7 centos-native-runtime
       - name: tag and push image
         run: |
