@@ -35,12 +35,12 @@ jobs:
         run: |      
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: pull dependency image
-        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:25-08-2025-e53f403
+        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:2025-08-27_0910-f5f0bb7
       - name: build image
         working-directory: ./presto-native-execution
         run: |
           make submodules
-          GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:25-08-2025-e53f403 centos-native-runtime
+          GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:2025-08-27_0910-f5f0bb7 centos-native-runtime
       - name: tag and push image
         working-directory: ./presto-native-execution
         run: |
