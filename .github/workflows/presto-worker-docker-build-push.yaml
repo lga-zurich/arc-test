@@ -6,6 +6,10 @@ jobs:
   test:
     runs-on: arc-runner-set
     steps:
+      - name: check out
+        uses: actions/checkout@master
+        with:
+          path: arc-test
       - name: check out presto
         uses: actions/checkout@master
         with:
@@ -31,7 +35,7 @@ jobs:
           git fetch origin pull/25376/head:presto-cudf-parquet-reader
           git switch presto-cudf-parquet-reader
           git rebase f5f0bb70c823669e0ff82a4f68c475432759e3be
-          cd presto-native-execution && make submodules && cd velox && pwd && ls -l ../../../../
+          cd presto-native-execution && make submodules && cd velox && pwd && ls -l ../../../arc-test
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
