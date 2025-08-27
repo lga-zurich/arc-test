@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: prestodb/presto
-          ref: f5f0bb7
+          ref: f5f0bb70c823669e0ff82a4f68c475432759e3be
       - name: install build tools
         run: |
           sudo apt update
