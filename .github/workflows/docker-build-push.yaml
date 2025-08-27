@@ -22,9 +22,8 @@ jobs:
           sudo apt update
           sudo apt install -y docker-ce
       - name: build image
-        run: |
-          cd ${GITHUB_WORKSPACE}/presto/presto-native-execution
-          docker compose build centos-native-dependency
+        working-directory: ./presto-native-execution
+        run: docker compose build centos-native-dependency
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
@@ -38,8 +37,8 @@ jobs:
         run: |      
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: tag and push image
+        working-directory: ./presto-native-execution
         run: |
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
-          cd ${GITHUB_WORKSPACE}/presto/presto-native-execution
           docker tag presto/prestissimo-dependency:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}
