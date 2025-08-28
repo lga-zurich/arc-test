@@ -37,6 +37,9 @@ jobs:
           git rebase f5f0bb70c823669e0ff82a4f68c475432759e3be
           cd presto-native-execution
           make submodules
+      - name: AWS creds hack
+        working-directory: ./presto
+        run: sed -i 's|^$|source /root/.aws/config.sh|' entrypoint.sh
       - name: cudf parquet velox patch
         working-directory: ./presto/presto-native-execution/velox
         run: |
