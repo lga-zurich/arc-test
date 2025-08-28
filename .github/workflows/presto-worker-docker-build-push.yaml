@@ -42,6 +42,7 @@ jobs:
         run: |
           sed -i 's/git submodule/#git submodule/' Makefile
           patch -p1 ../../../arc-test/presto-cudf-velox.patch
+          ls -l ../../../arc-test
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
