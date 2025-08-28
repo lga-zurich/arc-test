@@ -1,0 +1,50 @@
+name: presto dependency exchange image
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: arc-runner-set
+    steps:
+      - name: check out presto
+        uses: actions/checkout@master
+        with:
+          repository: lga-zurich/presto-exchange
+          ref: velox_submodule
+      - name: install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y make git docker-compose curl ca-certificates
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
+          echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                 $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt update
+          sudo apt install -y docker-ce
+      - name: build image
+        working-directory: ./presto-native-execution
+        run: |
+          make submodules
+          sed -i 's|https://archive.apache.org/dist/hadoop/common/hadoop-"${HADOOP_VERSION}"/hadoop-"${HADOOP_VERSION}".tar.gz|https://build-dependencies-presto-exchange.s3.us-west-2.amazonaws.com/hadoop-"${HADOOP_VERSION}".tar.gz|' velox/scripts/setup-common.sh
+          docker compose build centos-native-dependency
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-region: us-west-2
+      - name: install aws cli
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+      - name: login ecr
+        run: |      
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
+      - name: tag and push image
+        working-directory: ./presto-native-execution
+        run: |
+          export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
+          docker tag presto/prestissimo-dependency:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange
