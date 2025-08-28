@@ -26,6 +26,7 @@ jobs:
         working-directory: ./presto-native-execution
         run: |
           make submodules
+          sed -i 's/xxhash-devel/xxhash-devel ucx-devel/' velox/scripts/setup-centos9.sh
           docker compose build centos-native-dependency
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
