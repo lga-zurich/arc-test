@@ -64,5 +64,5 @@ jobs:
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
           docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
-          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG} 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange
