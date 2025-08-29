@@ -7,6 +7,6 @@ jobs:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: sally
     container:
-      image: ubuntu:latest
+      image: nvcr.io/nvidia/cuda:12.9.1-runtime-ubuntu22.04
     steps:
-    - run: cat /etc/os-release
+    - run: nvidia-smi
