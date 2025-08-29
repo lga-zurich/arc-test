@@ -1,1 +1,17 @@
-docker run --runtime=nvidia --rm -it   --gpus all  --device /dev/infiniband/rdma_cm   $(for d in /dev/infiniband/uverbs*; do printf -- '--device=%s ' "$d"; done)   -v /gpfs/zc2/gds:/gpds/zc2/gds --env NVIDIA_GDS=enabled   -v /etc/cufile.json:/etc/cufile.json:ro   --cap-add=IPC_LOCK   --network=host   gds-test gdscheck -p
+name: GDS test
+on:
+  workflow_dispatch:
+
+jobs:
+  GDS-test:
+    runs-on: sally
+    container:
+      image: gds-test
+      env:
+        NVIDIA_GDS: enabled
+      volumes:
+        - /gpfs/zc2/gds:/gpds/zc2/gds
+        - /etc/cufile.json:/etc/cufile.json:ro
+      options: --gpus all  --device /dev/infiniband/rdma_cm   $(for d in /dev/infiniband/uverbs*; do printf -- '--device=%s ' "$d"; done) --cap-add=IPC_LOCK   --network=host
+    steps:
+    - run: gdscheck -p
