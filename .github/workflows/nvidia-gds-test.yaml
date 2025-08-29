@@ -14,4 +14,6 @@ jobs:
         - /etc/cufile.json:/etc/cufile.json:ro
       options: --runtime=nvidia --gpus all  --device /dev/infiniband/rdma_cm  --device=/dev/infiniband/uverbs0 --device=/dev/infiniband/uverbs1 --device=/dev/infiniband/uverbs2 --device=/dev/infiniband/uverbs3 --device=/dev/infiniband/uverbs4 --device=/dev/infiniband/uverbs5 --device=/dev/infiniband/uverbs6 --device=/dev/infiniband/uverbs7 --device=/dev/infiniband/uverbs8 --device=/dev/infiniband/uverbs9 --cap-add=IPC_LOCK
     steps:
-    - run: gdscheck -p
+    - run: | 
+      gdscheck -p
+      gdsio -f /gpfs/zc2/tmp/test2-0-sally -d 0 -w 10 -I 0 -s 100G -i 4M
