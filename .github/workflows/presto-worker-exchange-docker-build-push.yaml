@@ -59,6 +59,7 @@ jobs:
           grep isParquetConnectorRegistered ./velox/velox/experimental/cudf/exec/ToCudf.h
           GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange centos-native-runtime
       - name: tag and push image
+        working-directory: ./presto/presto-native-execution
         run: |
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
           docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}
