@@ -6,7 +6,7 @@ jobs:
   GDS-test:
     runs-on: sally
     container:
-      image: gds-test
+      image: 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/gds-test:latest
       env:
         NVIDIA_GDS: enabled
       volumes:
