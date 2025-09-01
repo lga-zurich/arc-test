@@ -1,0 +1,20 @@
+name: presto dependency exchange image
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: sally
+    steps:
+      - name: check out presto
+        uses: actions/checkout@master
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: build and push the image
+        uses: uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile-ucx
+          push: true
+          tags: |
+            471112500371.dkr.ecr.us-west-2.amazonaws.com/perfleap/ucx-builds:latest
