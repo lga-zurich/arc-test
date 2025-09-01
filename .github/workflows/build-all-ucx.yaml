@@ -9,8 +9,6 @@ jobs:
         ucxversion: ["1.18.1", "1.19.0"]
     runs-on: sally
     steps:
-      - name: check out repo
-        uses: actions/checkout@master
       - uses: .github/workflows/ucx-base-image.yaml
         with:
           ucxversion: ${{ matrix.ucxversion }}
