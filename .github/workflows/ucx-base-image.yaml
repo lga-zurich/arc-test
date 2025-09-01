@@ -17,7 +17,7 @@ jobs:
   build-and-push-ucx:
     runs-on: sally
     steps:
-      - name: check out presto
+      - name: check out repo
         uses: actions/checkout@master
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
