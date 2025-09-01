@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: check out repo
         uses: actions/checkout@master
-      - uses: ./.github/workflows/ucx-base-image.yaml
+      - uses: .github/workflows/ucx-base-image.yaml
         with:
           ucxversion: ${{ matrix.ucxversion }}
