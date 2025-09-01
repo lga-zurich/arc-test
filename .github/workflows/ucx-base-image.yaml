@@ -1,9 +1,14 @@
 name: ucx base image
 on:
   workflow_dispatch:
+    inputs:
+      ucxversion:
+        description: 'ucx version to build'
+        required: true
+        default: '1.18.1'
 
 jobs:
-  test:
+  build-and-push-ucx:
     runs-on: sally
     steps:
       - name: check out presto
@@ -12,9 +17,14 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: build and push the image
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: ./Dockerfile-ucx
           push: true
           tags: |
-            471112500371.dkr.ecr.us-west-2.amazonaws.com/perfleap/ucx-builds:latest
+            471112500371.dkr.ecr.us-west-2.amazonaws.com/perfleap/ucx-builds:${{ github.event.inputs.ucxversion }}
+          build-args: |
+            UCX_VERSION="${{ github.event.inputs.ucxversion }}"
