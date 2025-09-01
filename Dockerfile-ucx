@@ -1,5 +1,5 @@
 FROM quay.io/centos/centos:stream9
-
+ARG UCX_VERSION
 RUN yum install -y \
         autoconf \
         automake \
@@ -26,5 +26,4 @@ RUN yum install -y \
 
 WORKDIR /root
 COPY build-ucx.sh /root/build-ucx.sh
-RUN bash ./build-ucx.sh
-
+RUN bash ./build-ucx.sh ${UCX_VERSION}
