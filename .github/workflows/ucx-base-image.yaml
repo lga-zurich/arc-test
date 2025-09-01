@@ -6,6 +6,12 @@ on:
         description: 'ucx version to build'
         required: true
         default: '1.18.1'
+  workflow_call:
+    inputs:
+      ucxversion:
+        description: 'ucx version to build'
+        required: true
+        default: '1.18.1'
 
 jobs:
   build-and-push-ucx:

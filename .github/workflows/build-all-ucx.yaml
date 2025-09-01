@@ -1,0 +1,14 @@
+name: build all ucx images
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-push-ucx-images:
+    strategy:
+      matrix:
+        ucxversion: ["1.18.1", "1.19.0"]
+    runs-on: sally
+    steps:
+      - uses: ./.github/workflows/ucx-base-image.yaml
+        with:
+          ucxversion: ${{ matrix.ucxversion }}
