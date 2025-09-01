@@ -9,5 +9,5 @@ jobs:
         ucxversion: ["1.18.1", "1.19.0"]
     runs-on: sally
     uses: ./.github/workflows/ucx-base-image.yaml@main
-      with:
-        ucxversion: ${{ matrix.ucxversion }}
+    with:
+      ucxversion: ${{ matrix.ucxversion }}
