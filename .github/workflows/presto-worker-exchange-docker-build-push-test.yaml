@@ -1,0 +1,68 @@
+name: presto worker image with exchange from CI source
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: arc-runner-set
+    steps:
+      - name: check out
+        uses: actions/checkout@master
+        with:
+          path: arc-test
+      - name: check out presto
+        uses: actions/checkout@master
+        with:
+          repository: lga-zurich/presto-exchange
+          path: presto
+          ref: ci-test-presto
+      - name: install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y make git docker-compose curl ca-certificates patch
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
+          echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                 $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt update
+          sudo apt install -y docker-ce
+      - name: set up submodules
+        working-directory: ./presto/presto-native-execution
+        run: |
+          make submodules
+          git remote -v
+          git reflog
+          cd velox
+          git remote -v
+          git reflog
+      - name: AWS creds hack
+        working-directory: ./presto/presto-native-execution
+        run: sed -i 's|^$|source /root/.aws/config.sh|' entrypoint.sh
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-region: us-west-2
+      - name: install aws cli
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+      - name: login ecr
+        run: |      
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
+      - name: pull dependency image
+        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange
+      - name: build image
+        working-directory: ./presto/presto-native-execution
+        run: |
+          grep isParquetConnectorRegistered ./velox/velox/experimental/cudf/exec/ToCudf.h
+          GPU=ON docker compose build --build-arg NUM_THREADS=64 --build-arg CUDA_ARCHITECTURES=80 --build-arg DEPENDENCY_IMAGE=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange centos-native-runtime
+      - name: tag and push image
+        working-directory: ./presto/presto-native-execution
+        run: |
+          export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
+          docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange-ci
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange-ci
