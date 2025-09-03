@@ -1,12 +1,6 @@
-name: ucx base image
+name: build ucx base image
 on:
   workflow_dispatch:
-    inputs:
-      ucxversion:
-        description: 'ucx version to build'
-        required: true
-        default: '1.18.1'
-  workflow_call:
     inputs:
       ucxversion:
         description: 'ucx version to build'
