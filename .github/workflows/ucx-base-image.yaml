@@ -27,4 +27,4 @@ jobs:
           tags: |
             471112500371.dkr.ecr.us-west-2.amazonaws.com/perfleap/ucx-builds:${{ github.event.inputs.ucxversion }}
           build-args: |
-            UCX_VERSION="${{ github.event.inputs.ucxversion }}"
+            UCX_VERSION=${{ github.event.inputs.ucxversion }}
