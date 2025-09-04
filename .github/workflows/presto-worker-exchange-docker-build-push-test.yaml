@@ -13,9 +13,9 @@ jobs:
       - name: check out presto
         uses: actions/checkout@master
         with:
-          repository: lga-zurich/presto-exchange
+          repository: dan13bauer/presto
           path: presto
-          ref: ci-test-presto
+          ref: velox_submodule
       - name: install build tools
         run: |
           sudo apt update
