@@ -30,6 +30,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y make git
+      - name: set up git user
+        run: |
+          git config --global user.email "presto-cudf-ci@ibm.com"
+          git config --global user.name "Presto CUDF CI"
       - name: get velox
         working-directory: ./presto/presto-native-execution
         run: |
