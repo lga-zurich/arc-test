@@ -65,9 +65,9 @@ jobs:
           export VELOX_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
           git switch -c ci-test-velox-${VELOX_CI_BRANCH_TIMESTAMP}
           bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
-      #- name: push velox ci branch
-      #  working-directory: ./presto-native-execution/velox
-      #  run:  git push origin
-      #- name: push presto ci branch
-      #  run: git push origin
+      - name: push velox ci branch
+        working-directory: ./presto-native-execution/velox
+        run:  git push origin
+      - name: push presto ci branch
+        run: git push origin
           
