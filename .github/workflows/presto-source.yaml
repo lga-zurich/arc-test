@@ -24,13 +24,20 @@ jobs:
         with:
           repository: lga-zurich/presto-exchange
           ref: velox_submodule
+          path: presto
       - name: install build tools
         run: |
           sudo apt update
           sudo apt install -y make git
       - name: get velox
         working-directory: ./presto-native-execution
-        run: make submodules
+        run: |
+          make submodules
+          git remote -v
+          git reflog
+          cd velox
+          git remote -v
+          git reflog    
       - name: add presto repos
         run: | 
           git remote add public https://github.com/prestodb/presto.git
