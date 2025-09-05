@@ -1,6 +1,19 @@
 name: presto worker image with exchange
 on:
   workflow_dispatch:
+    inputs:
+      target_repository:
+        required: true
+        default: 'lga-zurich/presto-exchange'
+        description: 'which presto repository to build prestissimo from'
+      target_repository_ref:
+        required: true
+        default: 'velox_submodule'
+        description: 'target reference (branch, commit hash, tag, ...) to use'
+      dependency_image_tag:
+        required: true
+        default: 'latest-exchange'
+        description: 'dependency image tag to use'
 
 jobs:
   test:
@@ -13,9 +26,9 @@ jobs:
       - name: check out presto
         uses: actions/checkout@master
         with:
-          repository: lga-zurich/presto-exchange
+          repository: ${{ github.event.inputs.target_repository }}
           path: presto
-          ref: velox_submodule
+          ref: ${{ github.event.inputs.target_repository_ref }}
       - name: install build tools
         run: |
           sudo apt update
@@ -52,7 +65,7 @@ jobs:
         run: |      
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: pull dependency image
-        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange
+        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${{ github.event.inputs.dependency_image_tag }}
       - name: build image
         working-directory: ./presto/presto-native-execution
         run: |
