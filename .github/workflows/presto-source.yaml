@@ -25,6 +25,7 @@ jobs:
           repository: lga-zurich/presto-exchange
           ref: velox_submodule
           path: presto
+          fetch-depth: 0
       - name: install build tools
         run: |
           sudo apt update
