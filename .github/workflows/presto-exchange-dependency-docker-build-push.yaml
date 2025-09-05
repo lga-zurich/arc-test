@@ -56,7 +56,7 @@ jobs:
       - name: tag and push image
         working-directory: ./presto-native-execution
         run: |
-          export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
+          export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)-ucx${{ github.event.inputs.ucx_version }}
           docker tag presto/prestissimo-dependency:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
           docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest-exchange
