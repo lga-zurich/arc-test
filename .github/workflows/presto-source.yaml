@@ -30,7 +30,7 @@ jobs:
           sudo apt update
           sudo apt install -y make git
       - name: get velox
-        working-directory: ./presto-native-execution
+        working-directory: ./presto/presto-native-execution
         run: |
           make submodules
           git remote -v
@@ -39,21 +39,23 @@ jobs:
           git remote -v
           git reflog    
       - name: add presto repos
+        working-directory: ./presto
         run: | 
           git remote add public https://github.com/prestodb/presto.git
           bash -c "for i in ${{ github.event.inputs.presto-prs }} ; { PR_NUM=\$(echo \$i | sed 's/\(.*\),.*/\1/') ; git fetch public pull/\${PR_NUM}/head:pr-\${PR_NUM} ; }"
       - name: rebase on presto PRs
+        working-directory: ./presto
         run: |
           export PRESTO_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
           git switch -c ci-test-presto-${PRESTO_CI_BRANCH_TIMESTAMP}
           bash -c "for i in ${{ github.event.inputs.presto-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
       - name: add velox repos
-        working-directory: ./presto-native-execution/velox
+        working-directory: ./presto/presto-native-execution/velox
         run: |
           git remote add public https://github.com/facebookincubator/velox.git
           bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_NUM=\$(echo \$i | sed 's/\(.*\),.*/\1/') ; git fetch public pull/\${PR_NUM}/head:pr-\${PR_NUM} ; }"
       - name: rebase on velox PRs
-        working-directory: ./presto-native-execution/velox
+        working-directory: ./presto/presto-native-execution/velox
         run: |
           export VELOX_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
           git switch -c ci-test-velox-${VELOX_CI_BRANCH_TIMESTAMP}
