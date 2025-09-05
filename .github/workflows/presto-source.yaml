@@ -24,6 +24,10 @@ jobs:
         with:
           repository: lga-zurich/presto-exchange
           ref: velox_submodule
+      - name: install build tools
+        run: |
+          sudo apt update
+          sudo apt install -y make git
       - name: get velox
         working-directory: ./presto-native-execution
         run: make submodules
