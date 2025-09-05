@@ -1,6 +1,11 @@
 name: presto dependency exchange image
 on:
   workflow_dispatch:
+    inputs:
+      ucx_version:
+        required: true
+        default: '1.18.1'
+        description: 'UCX version to build'
 
 jobs:
   test:
@@ -35,7 +40,7 @@ jobs:
         working-directory: ./presto-native-execution
         run: |
           sed -i 's|https://archive.apache.org/dist/hadoop/common/hadoop-"${HADOOP_VERSION}"/hadoop-"${HADOOP_VERSION}".tar.gz|https://build-dependencies-presto-exchange.s3.us-west-2.amazonaws.com/hadoop-"${HADOOP_VERSION}".tar.gz|' velox/scripts/setup-common.sh
-          docker compose build centos-native-dependency
+          docker compose build --build-arg UCX_VERSION=${{ github.event.inputs.ucx_version }} centos-native-dependency
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
