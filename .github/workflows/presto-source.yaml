@@ -19,6 +19,8 @@ jobs:
   presto-gather:
     runs-on: arc-runner-set
     steps:
+      - name: set timestamp
+        run: echo $(date +%Y-%m-%d_%H%M) > /tmp/timestamp
       - name: check out presto
         uses: actions/checkout@master
         with:
@@ -51,8 +53,7 @@ jobs:
       - name: rebase on presto PRs
         working-directory: ./presto
         run: |
-          export PRESTO_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
-          git switch -c ci-test-presto-${PRESTO_CI_BRANCH_TIMESTAMP}
+          git switch -c ci-test-presto-$(cat /tmp/timestamp)
           bash -c "for i in ${{ github.event.inputs.presto-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
       - name: add velox repos
         working-directory: ./presto/presto-native-execution/velox
@@ -62,13 +63,12 @@ jobs:
       - name: rebase on velox PRs
         working-directory: ./presto/presto-native-execution/velox
         run: |
-          export VELOX_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
-          git switch -c ci-test-velox-${VELOX_CI_BRANCH_TIMESTAMP}
+          git switch -c ci-test-velox-$(cat /tmp/timestamp)
           bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
       - name: push velox ci branch
         working-directory: ./presto/presto-native-execution/velox
-        run:  git push --set-upstream origin
+        run:  git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
         working-directory: ./presto
-        run: git push --set-upstream origin
+        run: git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
