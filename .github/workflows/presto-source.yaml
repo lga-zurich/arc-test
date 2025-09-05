@@ -1,0 +1,55 @@
+name: presto source from all repos
+on:
+  workflow_dispatch:
+    inputs:
+      presto-prs:
+        description: 'Presto PRs to apply'
+        required: true
+        default: "25376,5135970"
+      velox-prs:
+        description: 'Velox PRs to apply'
+        required: true
+        default: "14640,d24f0ef 14462,0487b4c"
+      lga-fork-branch:
+        description: 'Branch to start Presto on the lga-fork'
+        required: true
+        default: velox_submodule
+
+jobs:
+  presto-gather:
+    runs-on: arc-runner-set
+    steps:
+      - name: check out presto
+        uses: actions/checkout@master
+        with:
+          repository: lga-zurich/presto-exchange
+          ref: velox_submodule
+      - name: get velox
+        working-directory: ./presto-native-execution
+        run: make submodules
+      - name: add presto repos
+        run: | 
+          git remote add public https://github.com/prestodb/presto.git
+          bash -c "for i in ${{ github.event.inputs.presto-prs }} ; { PR_NUM=\$(echo \$i | sed 's/\(.*\),.*/\1/') ; git fetch public pull/\${PR_NUM}/head:pr-\${PR_NUM} ; }"
+      - name: rebase on presto PRs
+        run: |
+          export PRESTO_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
+          git switch -c ci-test-presto-${PRESTO_CI_BRANCH_TIMESTAMP}
+          bash -c "for i in ${{ github.event.inputs.presto-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
+      - name: add velox repos
+        working-directory: ./presto-native-execution/velox
+        run: |
+          git remote add public https://github.com/facebookincubator/velox.git
+          bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_NUM=\$(echo \$i | sed 's/\(.*\),.*/\1/') ; git fetch public pull/\${PR_NUM}/head:pr-\${PR_NUM} ; }"
+      - name: rebase on velox PRs
+        working-directory: ./presto-native-execution/velox
+        run: |
+          export VELOX_CI_BRANCH_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
+          git switch -c ci-test-velox-${VELOX_CI_BRANCH_TIMESTAMP}
+          bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
+      #- name: push velox ci branch
+      #  working-directory: ./presto-native-execution/velox
+      #  run:  git push origin
+      #- name: push presto ci branch
+      #  run: git push origin
+          
