@@ -67,8 +67,12 @@ jobs:
           bash -c "for i in ${{ github.event.inputs.velox-prs }} ; { PR_REF=\$(echo \$i | sed 's/.*,\(.*\)/\1/')  ; git rebase \${PR_REF} ; }"
       - name: push velox ci branch
         working-directory: ./presto/presto-native-execution/velox
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:  git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
         working-directory: ./presto
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
