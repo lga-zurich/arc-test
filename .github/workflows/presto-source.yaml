@@ -74,5 +74,5 @@ jobs:
       - name: push presto ci branch
         working-directory: ./presto
         run: |
-          git push --set-upstream writable ci-test-presto-$(cat /tmp/timestamp)
+          git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
