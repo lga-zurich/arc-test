@@ -36,6 +36,7 @@ jobs:
         run: |
           git config --global user.email "presto-cudf-ci@ibm.com"
           git config --global user.name "Presto CUDF CI"
+          git config --global url.https://${{ secrets.PRESTO_VELOX_PUSH_SECRET }}@github.com/.insteadOf https://github.com/
       - name: get velox
         working-directory: ./presto/presto-native-execution
         run: |
@@ -68,11 +69,9 @@ jobs:
       - name: push velox ci branch
         working-directory: ./presto/presto-native-execution/velox
         run: |
-          git config --global url.https://${{ secrets.PRESTO_VELOX_PUSH_SECRET }}@github.com/.insteadOf https://github.com/
           git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
         working-directory: ./presto
         run: |
-          git config --global url.https://${{ secrets.PRESTO_VELOX_PUSH_SECRET }}@github.com/.insteadOf https://github.com/
           git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
