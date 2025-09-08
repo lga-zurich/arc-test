@@ -15,7 +15,7 @@ jobs:
         with:
           repository: lga-zurich/presto-exchange
           path: presto
-          ref: ci-test-presto-2025-09-08_1330
+          ref: ci-test-presto-2025-09-08_1430
       - name: install build tools
         run: |
           sudo apt update
