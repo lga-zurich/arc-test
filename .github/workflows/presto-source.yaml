@@ -28,10 +28,11 @@ jobs:
           ref: velox_submodule
           path: presto
           fetch-depth: 0
+          token: ${{ secrets.PRESTO_VELOX_PUSH_SECRET }}
       - name: install build tools
         run: |
           sudo apt update
-          sudo apt install -y make git gh
+          sudo apt install -y make git
       - name: set up git user
         run: |
           git config --global user.email "presto-cudf-ci@ibm.com"
@@ -73,6 +74,5 @@ jobs:
       - name: push presto ci branch
         working-directory: ./presto
         run: |
-          git remote add writable https://github.com/lga-zurich/presto-exchange
           git push --set-upstream writable ci-test-presto-$(cat /tmp/timestamp)
           
