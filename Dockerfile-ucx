@@ -1,5 +1,7 @@
 FROM quay.io/centos/centos:stream9
-ARG UCX_VERSION
+ARG UCX_VERSION=1.19.0
+ARG EFA_INSTALLER_VERSION=1.43.2
+ARG GDRCOPY_VERSION=v2.4.4
 RUN yum install -y \
         autoconf \
         automake \
@@ -10,7 +12,6 @@ RUN yum install -y \
         lsof \
         make \
         numactl-devel \
-        rdma-core-devel \
         rpm-build \
         wget \
         && yum clean all
@@ -25,5 +26,22 @@ RUN yum install -y \
         cuda-nvml-devel-12-8
 
 WORKDIR /root
+
+RUN git clone -b ${GDRCOPY_VERSION} https://github.com/NVIDIA/gdrcopy.git /tmp/gdrcopy \
+    && cd /tmp/gdrcopy \
+    && make prefix=/opt/gdrcopy install
+
+ENV LD_LIBRARY_PATH=/opt/gdrcopy/lib:/usr/local/cuda/compat:$LD_LIBRARY_PATH
+ENV LIBRARY_PATH=/opt/gdrcopy/lib:/usr/local/cuda/compat/:$LIBRARY_PATH
+ENV CPATH=/opt/gdrcopy/include:$CPATH
+ENV PATH=/opt/gdrcopy/bin:$PATH
+
+RUN curl -O https://efa-installer.amazonaws.com/aws-efa-installer-${EFA_INSTALLER_VERSION}.tar.gz \
+    && tar -xf $HOME/aws-efa-installer-${EFA_INSTALLER_VERSION}.tar.gz \
+    && cd aws-efa-installer \
+    && sed -i '/is_rhel_9() {/,/}/c\is_rhel_9() {\n    return 0\n}' common.sh \
+    && ./efa_installer.sh -y -g -d --skip-kmod --skip-limit-conf --no-verify \
+    && rm -rf $HOME/aws-efa-installer
+
 COPY build-ucx.sh /root/build-ucx.sh
 RUN bash ./build-ucx.sh ${UCX_VERSION}
