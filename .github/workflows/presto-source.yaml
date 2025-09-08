@@ -70,6 +70,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo \${GH_TOKEN} | gh auth login --with-token
           gh auth setup-git
           git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
@@ -77,6 +78,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo \${GH_TOKEN} | gh auth login --with-token
           gh auth setup-git
           git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
