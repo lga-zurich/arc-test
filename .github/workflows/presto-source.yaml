@@ -9,11 +9,11 @@ on:
       velox-prs:
         description: 'Velox PRs to apply'
         required: true
-        default: "14640,d24f0ef 14462,0487b4c"
+        default: "14640,9f8aab1"
       lga-fork-branch:
         description: 'Branch to start Presto on the lga-fork'
         required: true
-        default: velox_submodule
+        default: velox_submodule_lga
 
 jobs:
   presto-gather:
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: lga-zurich/presto-exchange
-          ref: velox_submodule
+          ref: ${{ github.event.inputs.lga-fork-branch }}
           path: presto
           fetch-depth: 0
           token: ${{ secrets.PRESTO_VELOX_PUSH_SECRET }}
@@ -74,5 +74,6 @@ jobs:
       - name: push presto ci branch
         working-directory: ./presto
         run: |
+          git commit -a -m "Advance velox"
           git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
