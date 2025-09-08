@@ -73,5 +73,6 @@ jobs:
       - name: push presto ci branch
         working-directory: ./presto
         run: |
+          git config --global url.https://${{ secrets.PRESTO_VELOX_PUSH_SECRET }}@github.com/.insteadOf https://github.com/
           git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
           
