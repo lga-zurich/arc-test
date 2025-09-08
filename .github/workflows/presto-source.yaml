@@ -69,11 +69,10 @@ jobs:
       - name: push velox ci branch
         working-directory: ./presto/presto-native-execution/velox
         run: |
-          git remote -v
           git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
         working-directory: ./presto
         run: |
-          git remote -v
-          git push --set-upstream origin ci-test-presto-$(cat /tmp/timestamp)
+          git remote add writable https://github.com/lga-zurich/presto-exchange
+          git push --set-upstream writable ci-test-presto-$(cat /tmp/timestamp)
           
