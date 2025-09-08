@@ -71,6 +71,7 @@ jobs:
           TOKEN: ${{ secrets.PRESTO_VELOX_PUSH_SECRET }}
         run: |
           echo ${TOKEN} | gh auth login --with-token
+          gh auth status
           gh auth setup-git
           git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
