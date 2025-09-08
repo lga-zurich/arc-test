@@ -15,7 +15,7 @@ jobs:
         with:
           repository: lga-zurich/presto-exchange
           path: presto
-          ref: velox_submodule
+          ref: ci-test-presto-2025-09-08_1330
       - name: install build tools
         run: |
           sudo apt update
@@ -62,7 +62,7 @@ jobs:
         working-directory: ./presto/presto-native-execution
         run: |
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
-          docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
-          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
-          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange-ci
+          docker tag presto/prestissimo-runtime:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange-ci
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange-ci
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:${PRESTO_BUILD_IMG_TAG}-exchange-ci 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange-ci
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-runtime-centos9:latest-exchange-ci
