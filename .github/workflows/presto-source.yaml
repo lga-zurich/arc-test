@@ -74,7 +74,7 @@ jobs:
           echo ERROR1
           gh auth status
           echo ERRRO2
-          gh auth setup-git
+          echo "gh auth setup-git"
           echo ERROR3
           git push --set-upstream origin ci-test-velox-$(cat /tmp/timestamp)
       - name: push presto ci branch
