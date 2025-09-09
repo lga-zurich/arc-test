@@ -51,7 +51,9 @@ jobs:
           git reflog
       - name: AWS creds hack
         working-directory: ./presto/presto-native-execution
-        run: sed -i 's|^$|source /root/.aws/config.sh|' entrypoint.sh
+        run: |
+          sed -i 's/etc$/etc \$@/' entrypoint.sh
+          sed -i 's|^$|source /root/.aws/config.sh|' entrypoint.sh
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
