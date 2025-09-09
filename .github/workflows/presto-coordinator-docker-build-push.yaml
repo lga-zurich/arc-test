@@ -1,6 +1,23 @@
 name: presto coordinator image
 on:
   workflow_dispatch:
+    inputs:
+      presto-branch:
+        description: 'presto branch (ref) to build from'
+        required: true
+        default: 'master'
+      presto-version:
+        description: 'current presto version'
+        required: true
+        default: '0.295-SNAPSHOT'
+      dependency-tag:
+        description: 'tag of dependency image used for the build'
+        required: true
+        default: 'latest'
+      image-tag:
+        description: 'final tag of the presto coordinator image'
+        required: true
+        default: 'latest'
 
 jobs:
   test:
@@ -10,7 +27,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: prestodb/presto
-          ref: f5f0bb70c823669e0ff82a4f68c475432759e3be
+          ref: ${{ github.event.inputs.presto-branch }}
       - name: install build tools
         run: |
           sudo apt update
@@ -35,24 +52,25 @@ jobs:
         run: |      
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 471112500371.dkr.ecr.us-west-2.amazonaws.com
       - name: pull dependency image
-        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest
+        run: docker pull 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${{ github.event.inputs.dependency-tag }}
       - name: build image
         run: |
-          docker run -d --rm --name compile-presto-coordinator -v $(pwd):/presto 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:latest tail -f /dev/null
+          docker run -d --rm --name compile-presto-coordinator -v $(pwd):/presto 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${{ github.event.inputs.dependency-tag }} tail -f /dev/null
           docker exec compile-presto-coordinator bash -c "dnf install -y python3.11 && rm -f /usr/bin/python3 && ln -s /usr/bin/python3.11 /usr/bin/python3"
-          docker exec compile-presto-coordinator bash -c "cd /presto && ./mvnw install -DskipTests -T 64 && chmod a+r presto-cli/target/presto-cli-0.295-SNAPSHOT-executable.jar"
+          docker exec compile-presto-coordinator bash -c "cd /presto && ./mvnw install -DskipTests -T 64 && chmod a+r presto-cli/target/presto-cli-${{ github.event.inputs.presto-version }}-executable.jar"
           docker stop compile-presto-coordinator
-          cp presto-server/target/presto-server-0.295-SNAPSHOT.tar.gz ./docker/
-          cp presto-cli/target/presto-cli-0.295-SNAPSHOT-executable.jar ./docker/
+          cp presto-server/target/presto-server-${{ github.event.inputs.presto-version }}.tar.gz ./docker/
+          cp presto-cli/target/presto-cli-${{ github.event.inputs.presto-version }}-executable.jar ./docker/
           cd docker
           sed -i 's/dnf install -y java-17-openjdk less procps python3/dnf install -y java-17-openjdk less procps python3 which/' Dockerfile
           sed -i '/clean cache jobs/{N;d;}' Dockerfile
           sed -i 's/python \\$/python/' Dockerfile
-          BUILDER=default PLATFORMS=linux/amd64 REG_ORG=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto IMAGE_NAME=presto-coordinator bash ./build.sh 0.295-SNAPSHOT
+          BUILDER=default PLATFORMS=linux/amd64 REG_ORG=471112500371.dkr.ecr.us-west-2.amazonaws.com/presto IMAGE_NAME=presto-coordinator bash ./build.sh ${{ github.event.inputs.presto-version }}
       - name: tag and push image
         working-directory: ./presto-native-execution
         run: |
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${{ github.event.inputs.image-tag }}
           docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${PRESTO_BUILD_IMG_TAG}
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${PRESTO_BUILD_IMG_TAG}
-          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${{ github.event.inputs.image-tag }}
