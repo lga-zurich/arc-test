@@ -58,6 +58,6 @@ jobs:
         working-directory: ./presto-native-execution
         run: |
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)
-          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${PRESTO_BUILD_IMG_TAG}
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest-test 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${PRESTO_BUILD_IMG_TAG}
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:${PRESTO_BUILD_IMG_TAG}
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/presto-coordinator:latest-test
