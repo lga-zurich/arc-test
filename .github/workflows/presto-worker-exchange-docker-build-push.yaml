@@ -12,7 +12,7 @@ on:
         description: 'target reference (branch, commit hash, tag, ...) to use'
       dependency_image_tag:
         required: true
-        default: 'latest-exchange'
+        default: 'ucx1.18.1-latest-exchange'
         description: 'dependency image tag to use'
       final_image_tag:
         required: true
