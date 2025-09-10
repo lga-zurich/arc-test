@@ -14,6 +14,10 @@ on:
         required: true
         default: 'latest-exchange'
         description: 'dependency image tag to use'
+      final_image_tag:
+        required: true
+        default: 'latest-exchange'
+        description: 'final tag of the image produced'
 
 jobs:
   test:
