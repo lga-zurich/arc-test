@@ -5,7 +5,7 @@ on:
       ucxversion:
         description: 'ucx version to build'
         required: true
-        default: '1.18.1'
+        default: 'v1.18.1'
 
 jobs:
   build-and-push-ucx:
