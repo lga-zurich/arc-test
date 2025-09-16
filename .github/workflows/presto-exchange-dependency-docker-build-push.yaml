@@ -6,6 +6,10 @@ on:
         required: true
         default: '1.18.1'
         description: 'UCX version to build'
+      final_image_tag:
+        required: true
+        default: 'latest-exchange'
+        description: 'final tag of the image produced'
 
 jobs:
   test:
@@ -59,5 +63,5 @@ jobs:
           export PRESTO_BUILD_IMG_TAG=$(date +%Y-%m-%d_%H%M)-$(git log --pretty="%h" | head -1)-ucx${{ github.event.inputs.ucx_version }}
           docker tag presto/prestissimo-dependency:centos9 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
           docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange
-          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:ucx${{ github.event.inputs.ucx_version }}-latest-exchange
-          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:ucx${{ github.event.inputs.ucx_version }}-latest-exchange
+          docker tag 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:${PRESTO_BUILD_IMG_TAG}-exchange 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:ucx${{ github.event.inputs.ucx_version }}-${{ github.event.inputs.final_image_tag }}
+          docker push 471112500371.dkr.ecr.us-west-2.amazonaws.com/presto/prestissimo-dependency-centos9:ucx${{ github.event.inputs.ucx_version }}-${{ github.event.inputs.final_image_tag }}
