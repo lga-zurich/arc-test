@@ -4,8 +4,12 @@ on:
     inputs:
       ucx_version:
         required: true
-        default: '1.18.1'
+        default: '1.19.0'
         description: 'UCX version to build'
+      target_repository_ref:
+        required: true
+        default: 'velox_submodule'
+        description: 'target reference (branch, commit hash, tag, ...) to use'
       final_image_tag:
         required: true
         default: 'latest-exchange'
@@ -19,7 +23,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: lga-zurich/presto-exchange
-          ref: velox_submodule
+          ref: ${{ github.event.inputs.target_repository_ref }}
       - name: install build tools
         run: |
           sudo apt update
